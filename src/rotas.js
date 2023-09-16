@@ -1,21 +1,21 @@
 const express = require('express');
+const { cadastrarUsuario, login, detalharPerfil, editarPerfil, listarCategoria } = require('./controladores/usuario.js');
+const { listarTransacoes, detalharTransacao, cadastrarTransacao, editarTransacao, removerTransacao, obterExtrato } = require('./controladores/transacoes.js');
+
 const rotas = express();
 
-rotas.get('/', (req, res) => {
-    res.json({ mensagem: 'ok' });
-});
+rotas.post('/usuario', cadastrarUsuario);
+rotas.post('/login', login);
+rotas.get('/usuario', detalharPerfil);
+rotas.put('/usuario', editarPerfil);
 
-// Cadastrar Usuário
-// Fazer Login
-// Detalhar Perfil do Usuário Logado
-// Editar Perfil do Usuário Logado
-// Listar categorias
-// Listar transações
-// Detalhar transação
-// Cadastrar transação
-// Editar transação
-// Remover transação
-// Obter extrato de transações
-// [Extra] Filtrar transações por categoria
+rotas.get('/categoria', listarCategoria);
+
+rotas.get('/transacao', listarTransacoes);//[Extra]Filtrar transações por categoria
+rotas.get('/transacao/:id', detalharTransacao);
+rotas.post('/transacao', cadastrarTransacao);
+rotas.put('/transacao/:id', editarTransacao);
+rotas.delete('/transacao/:id', removerTransacao);
+rotas.get('/transacao/extrato', obterExtrato);
 
 module.exports = rotas;
