@@ -1,5 +1,5 @@
 const express = require('express');
-const { cadastrarUsuario, login, detalharPerfil, editarPerfil, listarCategoria } = require('./controladores/usuario.js');
+const { cadastrarUsuario, login, detalharPerfil, editarPerfil, listarCategorias } = require('./controladores/usuario.js');
 const { listarTransacoes, detalharTransacao, cadastrarTransacao, editarTransacao, removerTransacao, obterExtrato } = require('./controladores/transacoes.js');
 
 const rotas = express();
@@ -9,7 +9,7 @@ rotas.post('/login', login);
 rotas.get('/usuario', detalharPerfil);
 rotas.put('/usuario', editarPerfil);
 
-rotas.get('/categoria', listarCategoria);
+rotas.get('/categoria', listarCategorias);
 
 rotas.get('/transacao', listarTransacoes);//[Extra]Filtrar transações por categoria
 rotas.get('/transacao/:id', detalharTransacao);

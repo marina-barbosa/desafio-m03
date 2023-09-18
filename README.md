@@ -42,7 +42,7 @@
 ## Para executar:
 
 1. Clone este repositório: `git clone git@github.com:marina-barbosa/desafio-m03.git`
-2. Navegue até o diretório do projeto: `cd desafio-m03/src/`
+2. Navegue até o diretório do projeto: `cd desafio-m03`
 3. Instale as dependências: `npm install`
 4. Inicie o servidor: `npm run dev`
 5. A API estará disponível em: `http://localhost:3333` por padrão.
