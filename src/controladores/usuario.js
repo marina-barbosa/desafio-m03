@@ -46,7 +46,7 @@ const login = async (req, res) => {
         const { rows } = await pool.query(`select * from usuarios where email = $1`, [email]);
 
         if (rows.length === 0) {
-            return res.status(400).json({ mensagem: 'Usuário e/ou senha inválido(s).' });
+            return res.status(401).json({ mensagem: 'Usuário e/ou senha inválido(s).' });
         }
 
         const { senha: senhaDigitada, ...usuario } = rows[0];
@@ -54,7 +54,7 @@ const login = async (req, res) => {
         const senhaValida = await bcrypt.compare(senha, senhaDigitada);
 
         if (!senhaValida) {
-            return res.status(400).json({ mensagem: 'Usuário e/ou senha inválido(s).' });
+            return res.status(401).json({ mensagem: 'Usuário e/ou senha inválido(s).' });
         }
 
         const token = jwt.sign(
@@ -70,7 +70,6 @@ const login = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error);
         return res.status(500).json({ mensagem: `Erro interno do Servidor. ${error}` });
     }
 };
