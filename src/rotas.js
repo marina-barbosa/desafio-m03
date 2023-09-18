@@ -1,11 +1,15 @@
 const express = require('express');
 const { cadastrarUsuario, login, detalharPerfil, editarPerfil, listarCategorias } = require('./controladores/usuario.js');
 const { listarTransacoes, detalharTransacao, cadastrarTransacao, editarTransacao, removerTransacao, obterExtrato } = require('./controladores/transacoes.js');
+const verificaLogin = require('./intermediarios/varificaLogin.js');
 
 const rotas = express();
 
 rotas.post('/usuario', cadastrarUsuario);
 rotas.post('/login', login);
+
+rotas.use(verificaLogin);
+
 rotas.get('/usuario', detalharPerfil);
 rotas.put('/usuario', editarPerfil);
 

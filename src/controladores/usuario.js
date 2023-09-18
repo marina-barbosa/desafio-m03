@@ -75,7 +75,7 @@ const login = async (req, res) => {
 };
 
 const detalharPerfil = (req, res) => {
-
+    return res.json(req.usuario);
 };
 
 const editarPerfil = (req, res) => {
