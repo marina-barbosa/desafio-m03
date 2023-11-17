@@ -1,96 +1,128 @@
+
+const key = require('../key')
 const pool = require('../conexao.js');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const senhaJwt = require('../senhaJwt.js');
+const bcrypt = require('bcrypt');
 
 const cadastrarUsuario = async (req, res) => {
     const { nome, email, senha } = req.body;
 
     if (!nome || !email || !senha) {
-        return res.status(400).json({ mensagem: 'Os campos nome, email e senha são obrigátorios' });
+        return res.status(400).json({ mensagem: 'Os campos nome, email e senha são obrigatórios' });
     }
 
     try {
-        const emailExiste = await pool.query(`select * from usuarios where email = $1`, [email]);
+        const emailExiste = await pool.query("select * from usuarios where email = $1", [email]);
 
         if (emailExiste.rowCount > 0) {
-            return res.status(400).json({ mensagem: 'Já existe usuário cadastrado com o e-mail informado.' })
+            return res.status(400).json({ mensagem: 'Já existe usuário cadastrado com o e-mail informado.' });
         }
-
         const senhaCriptografada = await bcrypt.hash(senha, 10);
-        const query = "insert into usuarios (nome, email, senha) values ($1, $2, $3) returning *"
-        const values = [nome, email, senhaCriptografada];
-        const { rows } = await pool.query(query, values);
+        const consulta = "insert into usuarios (nome, email, senha) values ($1, $2, $3) returning *";
+        const valores = [nome, email, senhaCriptografada];
+        const { rows } = await pool.consulta(consulta, valores);
 
         const novoUsuario = {
             id: rows[0].id,
             nome: rows[0].nome,
-            email: rows[0].email
+            email: rows[0].email,
         };
         return res.status(201).json(novoUsuario);
+
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ mensagem: `Erro interno do Servidor. ${error}` });
+        return res.status(500).json({ mensagem: `Erro interno do servidor. ${error.message}` });
     }
 
-};
 
-const login = async (req, res) => {
+
+}
+
+const loginUsuario = async (req, res) => {
     const { email, senha } = req.body;
 
     if (!email || !senha) {
-        return res.status(400).json({ mensagem: 'Os campos email e senha são obrigátorios' });
+        return res.status(400).json({ mensagem: 'Os campos email e senha são obrigatórios' });
     }
 
     try {
-        const { rows } = await pool.query(`select * from usuarios where email = $1`, [email]);
+        const usuario = await pool.query("select * from usuarios where email = $1", [email]);
 
-        if (rows.length === 0) {
-            return res.status(401).json({ mensagem: 'Usuário e/ou senha inválido(s).' });
+        if (usuario.rowCount < 1) {
+            return res.status(404).json({ mensagem: "Usuário e/ou senha inválido(s)." });
         }
 
-        const { senha: senhaDigitada, ...usuario } = rows[0];
-
-        const senhaValida = await bcrypt.compare(senha, senhaDigitada);
+        const senhaValida = await bcrypt.compare(senha, usuario.rows[0].senha);
 
         if (!senhaValida) {
-            return res.status(401).json({ mensagem: 'Usuário e/ou senha inválido(s).' });
+            return res.status(404).json({ mensagem: "Usuário e/ou senha inválido(s)." });
         }
 
-        const token = jwt.sign(
-            { id: usuario.id },
-            senhaJwt,
-            { expiresIn: '8h' }
-        )
+        const token = jwt.sign({ id: usuario.rows[0].id }, key, { expiresIn: '10h' });
 
-        return res.json({
-            usuario,
-            token,
-        })
+        const { senha: _, ...usuarioLogado } = usuario.rows[0];
 
+        return res.status(200).json({ usuario: usuarioLogado, token });
 
     } catch (error) {
-        return res.status(500).json({ mensagem: `Erro interno do Servidor. ${error}` });
+        return res.status(500).json({ mensagem: `Erro interno do servidor. ${error.message}` });
     }
-};
+}
 
-const detalharPerfil = (req, res) => {
-    return res.json(req.usuario);
-};
+const detalharUsuarios = async (req, res) => {
+    try {
+        return res.status(200).json(req.usuario);
+    } catch (error) {
+        return res.status(401).json({ "mensagem": "Para acessar este recurso um token de autenticação válido deve ser enviado." })
+    }
+}
 
-const editarPerfil = (req, res) => {
+const atualizarUsuario = async (req, res) => {
+    const { nome, email, senha } = req.body;
 
-};
+    const usuarioId = req.usuario.id
 
-const listarCategorias = (req, res) => {
+    if (!nome || !email || !senha) {
+        return res.status(400).json({ mensagem: 'Os campos nome, email e senha são obrigatórios' });
+    }
 
-};
+    try {
+
+        const emailExiste = await pool.query("select * from usuarios where email = $1", [email]);
+
+        if (emailExiste.rowCount > 0 && emailExiste.rows[0].id != usuarioId) {
+            return res.status(400).json({ mensagem: 'O e-mail informado já está sendo utilizado por outro usuário.' });
+        }
+
+        const senhaCriptografada = await bcrypt.hash(senha, 10);
+
+        await pool.query(
+            'update usuarios set nome = $1, email = $2, senha = $3 where id = $4',
+            [nome, email, senhaCriptografada, usuarioId]);
+
+        return res.status(204).send();
+
+    } catch (error) {
+        return res.status(401).json({ "mensagem": "Para acessar este recurso um token de autenticação válido deve ser enviado." });
+    }
+}
+
+
+const listarCategorias = async (req, res) => {
+    try {
+        const categorias = await pool.query("select * from categorias");
+        return res.status(200).json(categorias.rows);
+    } catch (error) {
+        return res.status(500).json({ mensagem: `Erro interno do servidor. ${error.message}` });
+    }
+}
+
 
 
 module.exports = {
     cadastrarUsuario,
-    login,
-    detalharPerfil,
-    editarPerfil,
+    loginUsuario,
+    detalharUsuarios,
+    atualizarUsuario,
     listarCategorias
 }
+

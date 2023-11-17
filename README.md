@@ -1,30 +1,15 @@
+# API RESTful de Gerenciamento de Transações Financeiras 
 
-
-# API RESTful
-
+Esta API RESTful oferece um conjunto de funcionalidades para o gerenciamento de transações financeiras. Com ela, os usuários podem cadastrar, visualizar, editar e excluir transações, além de obter informações sobre seu perfil e listar categorias disponíveis.
 
 <div align='center'>
   
-[GIF EM BREVE]() 
+![screenshot](https://github.com/Lizaliz0/desafio-backend-m03-b2bt05/blob/main/Screenshot_2.png) 
+![screenshot](https://github.com/Lizaliz0/desafio-backend-m03-b2bt05/blob/main/Screenshot_3.png) 
 
 </div>
 
-## A API oferece as seguintes funcionalidades:
-
-- Cadastrar Usuário
-- Fazer Login
-- Detalhar Perfil do Usuário Logado
-- Editar Perfil do Usuário Logado
-- Listar categorias
-- Listar transações
-- Detalhar transação
-- Cadastrar transação
-- Editar transação
-- Remover transação
-- Obter extrato de transações
-- [Extra] Filtrar transações por categoria
-
-## Rotas da API
+## Rotas e funcionalidades da API?
 
 - `POST /usuario`: Essa é a rota que será utilizada para cadastrar um novo usuario no sistema.
 - `POST /login`: Essa é a rota que permite o usuario cadastrado realizar o login no sistema.
@@ -41,9 +26,8 @@
 
 ## Para executar:
 
-1. Clone este repositório: `git clone git@github.com:marina-barbosa/desafio-m03.git`
-2. Navegue até o diretório do projeto: `cd desafio-m03`
+1. Clone este repositório: `git clone git@github.com:Lizaliz0/desafio-backend-m03-b2bt05.git`
+2. Navegue até o diretório do projeto: `cd desafio-backend-m03-b2bt05`
 3. Instale as dependências: `npm install`
 4. Inicie o servidor: `npm run dev`
 5. A API estará disponível em: `http://localhost:3333` por padrão.
-
